@@ -436,7 +436,7 @@ const EN={
  'Пылесос поехал — коты на пол не спустятся.':"The vacuum is on — the cats won't come down to the floor.",'Пылесос':'Vacuum','Телевизором!':'TV hit!','Телевизор падает!':'The TV is falling!',
  'Стол рухнул! Фрукты раскатились по полу.':'The table collapsed! Fruit rolled all over the floor.','Звёздами по башке!':'Stars to the head!',
  'Заводная мышь бегает — коты охотятся, а не орут!':'The wind-up mouse is running — the cats hunt instead of yelling!','Завод кончился':'Wound down','Мышь заведена!':'Mouse wound up!','Мышь упала!':'The mouse fell!',
- 'Наступил на лего!':'Stepped on a brick!','Из рюкзака выпали аптечка, бинт и зелёнка.':'A med kit, a bandage and antiseptic fell out of the backpack.','С верхнего яруса!':'Off the top bunk!',
+ 'Наступил на лего':'Stepped on a brick','Из рюкзака выпали аптечка, бинт и зелёнка.':'A med kit, a bandage and antiseptic fell out of the backpack.','С верхнего яруса!':'Off the top bunk!',
  'УИУ-УИУ!':'WEE-OOO!','Сигнализация! Сон уходит быстрее. Выключите её брелоком на стене.':'Car alarm! Sleep drains faster. Turn it off with the key fob on the wall.',
  'Покрышка покатилась!':'A tire rolls!','Лампа разбита':'The lamp is smashed','Свет включён':'Lights on','Пробки выбило!':'Fuses blown!','Из норки выбежала мышь — коты бросились ловить!':'A mouse ran out of its hole — the cats are after it!',
  'Пик-пик. Тишина.':'Beep-beep. Silence.','Пик!':'Beep!','Покрышкой!':'Tire hit!','Лампой!':'Lamp hit!','Молотком!':'Hammer hit!','Ключом!':'Wrench hit!','С крыши минивэна!':'Off the minivan roof!','С капота!':'Off the hood!',
@@ -446,7 +446,7 @@ const EN={
  'Стул сложился!':'The chair folded!','Подбросило!':'Launched!','Яблок больше нет':'No apples left','Яблоки посыпались!':'Apples are falling!','Мокрым бельём!':'Wet laundry!',
  'Прости.':'Sorry.','Мы больше не будем.':"We won't do it again.",'Мур.':'Purr.','Спокойной ночи!':'Good night!','Это был не я.':"It wasn't me.",'Ладно, спим.':"Fine, let's sleep.",'Завтрак в восемь?':'Breakfast at eight?',
  'Снаряды кончились. Подберите их в комнате.':'Out of ammo. Pick some up in the room.','Вы и так целы.':"You're fine already.",'Аптечки нет. Ищите в комнате.':'No meds. Look around the room.',
- 'Комбо сброшено':'Combo lost','В голову!':'Headshot!','Перехват!':'Intercepted!','Вон из холодильника!':'Out of the fridge!','Оба уснули!':'Both asleep!','Уснул!':'Asleep!','Один спит. Остался второй!':'One is asleep. One to go!',
+ 'Комбо сброшено':'Combo lost','В голову!':'Headshot!','Перехват!':'Intercepted!','Вон из холодильника!':'Out of the fridge!','Оба уснули':'Both asleep','Уснул':'Asleep','Один спит. Остался второй!':'One is asleep. One to go!',
  'Засосало!':'Sucked in!','По башке!':'Bonk!','Кот рядом — поцарапает':"Cat nearby — it'll scratch",'Трёхочковый!':'Three-pointer!','Со столешницы!':'Off the counter!',
  // levels
  'Спальня':'Bedroom','Окно приоткрыто, на полках хрупкое':'The window is ajar, fragile stuff on the shelves','В окно':'Out the window','Улетело в окно':'Out the window','улетело в окно':'flew out the window','Окно':'Window',
@@ -472,6 +472,7 @@ const EN={
 const ruNum=s=>+String(s).replace(/[^\d.-]/g,'');
 const money=s=>{const r=ruNum(s);return '$'+(r<=0?0:Math.max(1,Math.round(r/80))).toLocaleString('en-US');};
 const PAT=[
+ [/^(.+) \+([\d ,.]+)$/,m=>`${tr(m[1])} +${m[2]}`],
  [/^−([\d\s  ,]+) ₽$/,m=>'−'+money(m[1])],
  [/^([\d\s  ,]+) ₽$/,m=>money(m[1])],
  [/^([\d.]+) с$/,m=>m[1]+' s'],
@@ -1633,7 +1634,7 @@ function startDunk(k,pl){
   const cx=d==='tub'?clamp(k.x+k.face*hx,inn.x1+30,inn.x2-30):inn.cx;
   k.x=HEAD_FIRST[d]?inn.cx:cx-k.face*hx;k.y=inn.head+62*s;
   const pts=250*Math.max(1,game.combo);game.score+=pts;
-  pop(cx,inn.clip-80,{tub:'В ванну!',toilet:'В унитаз!',sink:'В раковину!',ksink:'В мойку!',bin:'В мусорку!'}[d]+` +${fmt(pts)}`,'#a8f0ff',24);
+  pop(cx,inn.clip-80,`+${fmt(pts)}`,'#a8f0ff',24);
   k.bubble={tub:'БУЛЬ!',toilet:'ФУУУ!',sink:'Застрял!',ksink:'БУЛЬ!',bin:'ФУ-ФУ!'}[d];k.bubbleT=1.4;
   if(d==='bin'){sThud();burst(cx,inn.clip,['#7a5a3a','#9fbf5a','#d9c04a','#f4efe4'],16,320,'shard');}else if(d!=='sink'){sSplash();burst(cx,inn.clip,['#bfe6ff','#ffffff','#9fd3f5'],22,380,'drop');}else sThud();
 }
@@ -1838,7 +1839,7 @@ const sWhirl=()=>nz(1.1,.3,'bandpass',300,1800,2);
 function hurtCat(k,dmg,label){
   cat=k;
   k.hp=Math.max(0,k.hp-dmg);k.flash=.15;const pts=200*Math.max(1,game.combo);game.score+=pts;
-  pop(k.x,k.y-130,`${label} +${fmt(pts)}`,'#ffd25c',22);pop(k.x,k.y-100,`−${dmg}`,'#ffd25c',26);sHit();
+  pop(k.x,k.y-130,label==='Наступил на лего'?`${label} +${fmt(pts)}`:`+${fmt(pts)}`,'#ffd25c',22);pop(k.x,k.y-100,`−${dmg}`,'#ffd25c',26);sHit();
   if(k.hp<=0){catSleep();return true;}return false;
 }
 function stoveHazard(k){
@@ -2411,7 +2412,7 @@ function kidsCatTick(k,dt){
   const it=picks.find(p=>p.kind==='lego'&&p.rest&&!p.crate&&p.y>FLOOR-20&&Math.abs(p.x-k.x)<30*k.b.size);
   if(!it)return;
   k.legoCd=game.t+1.2;it.rest=false;it.vx=(Math.random()<.5?-1:1)*rnd(150,260);it.vy=rnd(-280,-180);
-  if(hurtCat(k,9,'Наступил на лего!'))return;
+  if(hurtCat(k,9,'Наступил на лего'))return;
   k.state='stunned';k.stunType='daze';k.stunT=.9;sHiss();
 }
 function kidsBreak(id){
@@ -2876,13 +2877,13 @@ function birdCatch(k){
   k.state='idle';k.timer=rnd(.3,.7);
 }
 function chairHit(p,id){
-  if(yard.folded[id])return;yard.folded[id]=true;platById(id).off=true;sThud();dust(id==='chairL'?496:824,FLOOR,10);pop(id==='chairL'?496:824,440,'Стул сложился!','#fff',20);
+  if(yard.folded[id])return;yard.folded[id]=true;platById(id).off=true;sThud();dust(id==='chairL'?496:824,FLOOR,10);
   for(const k of cats)if(!k.air&&k.plat===id&&k.state!=='asleep'){if(!hurtCat(k,8,'Стул сложился!')){k.state='stunned';k.stunType='daze';k.stunT=1.6;}jumpTo(k,k.x,'floor');}
   for(const it of picks)if(it.rest&&Math.abs(it.x-(id==='chairL'?496:824))<50&&it.y<FLOOR-30)it.rest=false;
 }
 function beanHit(p){
   yard.beanT=.4;let any=false;
-  for(const k of cats)if(!k.air&&k.plat==='bean'&&k.state!=='asleep'){any=true;const bonus=300*Math.max(1,game.combo);game.score+=bonus;pop(k.x,k.y-140,`Подбросило! +${fmt(bonus)}`,'#fff',20);
+  for(const k of cats)if(!k.air&&k.plat==='bean'&&k.state!=='asleep'){any=true;const bonus=300*Math.max(1,game.combo);game.score+=bonus;pop(k.x,k.y-140,`+${fmt(bonus)}`,'#fff',20);
     k.state='stunned';k.stunType='daze';k.stunT=1.8;const x=clamp(k.x+rnd(-220,220),60,1220);k.air={x0:k.x,y0:k.y,x1:x,y1:FLOOR,t:0,T:1.1,plat:'floor',vy:(FLOOR-k.y-.5*G*1.21)/1.1};}
   if(!any)pop(960,500,'Пуф!','#fff',18);sThud();
 }
@@ -3084,7 +3085,7 @@ function scratch(dmg,msg){
   pop(cx,cy-60,`−${Math.round(dmg)}`,'#ff6b6b',36);sHiss();if(msg)toast(msg);
   if(player.hp<=0)endGame(false,'hp');
 }
-function miss(){if(game.combo>1)pop(640,520,'Комбо сброшено','#ffd0a0',18);game.combo=0;}
+function miss(){game.combo=0;}
 
 /* ---------------- hitting the cat ---------------- */
 function hitCat(p,head){
@@ -3097,7 +3098,7 @@ function hitCat(p,head){
   const pts=(100+(head?60:0)+(wasThreat?200:0))*game.combo;game.score+=pts;
   const h=catHead(k);
   pop(h.x,h.y-40,`−${Math.round(dmg)}`,'#ffd25c',30);
-  pop(h.x,h.y-72,`${head?'В голову! ':''}${wasThreat?'Перехват! ':''}+${fmt(pts)}`,'#fff',18);
+  pop(h.x,h.y-72,`+${fmt(pts)}`,'#fff',18);
   fur(k,8);sHit();if(a.squeak)sSqueak();
   if(k.hp<=0){catSleep();return;}
   if(k.state==='dunk'){k.dunkT=Math.min(k.dunkT+.4,4.5);return;}
@@ -3105,10 +3106,10 @@ function hitCat(p,head){
   if(!k.air&&k.plat==='counter'&&LV.kitchen&&k.state!=='climb'){
     const bin=platById('bin');if(k.x>bin.x1-14&&k.x<bin.x2+14){startDunk(k,bin);return;}
     k.state='stunned';k.stunType='daze';k.stunT=Math.max(1,a.stun);k.kvx=0;jumpTo(k,clamp(k.x+(Math.sign(p.vx)||1)*80,60,1220),'floor');
-    const bonus=150*Math.max(1,game.combo);game.score+=bonus;pop(k.x,k.y-120,`Со столешницы! +${fmt(bonus)}`,'#fff',20);return;}
+    const bonus=150*Math.max(1,game.combo);game.score+=bonus;pop(k.x,k.y-120,`+${fmt(bonus)}`,'#fff',20);return;}
   if(!k.air&&LV.knockOff&&LV.knockOff[k.plat]&&k.state!=='climb'){
     k.state='stunned';k.stunType='daze';k.stunT=Math.max(1.2,a.stun);k.kvx=0;const pl=platById(k.plat);jumpTo(k,clamp(k.x+(Math.sign(p.vx)||1)*90,60,1220),'floor');
-    const bonus=250*Math.max(1,game.combo);game.score+=bonus;pop(k.x,k.y-120,`${LV.knockOff[pl.id]} +${fmt(bonus)}`,'#fff',20);return;}
+    const bonus=250*Math.max(1,game.combo);game.score+=bonus;pop(k.x,k.y-120,`+${fmt(bonus)}`,'#fff',20);return;}
   if(!k.air&&k.state!=='climb'){const pl=platById(k.plat);if(pl&&pl.dunk&&!(pl.dunk==='toilet'&&furn.toilet&&furn.toilet.broken)){startDunk(k,pl);return;}}
   const st=a.stun*(head?1.3:1)+(wasThreat?1:0);
   if(k.state==='stunned'&&k.stunType==='towel'&&a.st!=='towel'){k.stunT=Math.max(k.stunT,.8);}
@@ -3121,8 +3122,8 @@ function catSleep(){
   if(k.air){k.x=k.air.x1;k.y=k.air.y1;k.plat=k.air.plat;k.air=null;}
   k.state='asleep';k.ko=Math.random()<.5?'back':'side';k.koStart=k.anim;dust(k.x,k.y,14);k.stunType=null;k.bubble=null;
   if(cats.every(c=>c.state==='asleep')){game.score+=1000+Math.round(player.hp)*10+Math.round(player.sleep)*10;game.winT=2.4;sWin();
-    pop(k.x,k.y-150,cats.length>1?'Оба уснули!':'Уснул!','#9ff0c4',40);}
-  else{game.score+=500;sHeal();pop(k.x,k.y-150,`${k.name} уснул!`,'#9ff0c4',32);toast('Один спит. Остался второй!',2.2);}
+    pop(k.x,k.y-150,cats.length>1?'Оба уснули':'Уснул','#9ff0c4',40);}
+  else{game.score+=500;sHeal();pop(k.x,k.y-150,`${k.name} уснул`,'#9ff0c4',32);toast('Один спит. Остался второй!',2.2);}
 }
 
 /* ---------------- cat AI ---------------- */
